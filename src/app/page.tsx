@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import { PackageCheck, Zap, RefreshCw, ChevronDown, CheckCircle, Store, CalendarCheck } from "lucide-react";
 import { db } from "@/lib/firebase";
@@ -13,6 +13,7 @@ export default function Home() {
   const [categories, setCategories] = useState<{ id: string, nome: string }[]>([]);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [formConfig, setFormConfig] = useState<any>(null);
+  const isSubmittingRef = useRef(false);
   const { scrollY } = useScroll();
 
   useEffect(() => {
@@ -59,7 +60,8 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return; // Prevent double submission
+    if (isSubmittingRef.current) return; // Sync block
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
 
     try {
@@ -79,6 +81,7 @@ export default function Home() {
       setRegistrationData(data);
       setSubmitStatus("success");
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
 
       // Do not auto-close so the user can download the PDF
       // setTimeout(() => {
@@ -88,6 +91,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error adding document: ", error);
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
       alert("Houve um erro ao realizar a inscrição. Tente novamente mais tarde.");
     }
   };
