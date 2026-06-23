@@ -1,26 +1,125 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-surface-dim: #0a0a0a;
+  --color-on-error: #690005;
+  --color-inverse-surface: #e5e2e1;
+  --color-on-secondary-fixed: #001b3d;
+  --color-surface: #0a0a0a;
+  --color-on-primary-fixed-variant: #832700;
+  --color-on-secondary: #193053;
+  --color-error: #ffb4ab;
+  --color-secondary-fixed-dim: #b1c7f2;
+  --color-on-primary: #5c1900;
+  --color-secondary-fixed: #d6e3ff;
+  --color-background: #0a0a0a;
+  --color-outline: #aa897f;
+  --color-tertiary-container: #8e959c;
+  --color-on-tertiary-container: #272e34;
+  --color-primary: #ff5f1f;
+  --color-surface-container-high: #1a1a1a;
+  --color-on-background: #e5e2e1;
+  --color-on-tertiary-fixed: #161c22;
+  --color-on-tertiary-fixed-variant: #41474e;
+  --color-error-container: #93000a;
+  --color-secondary-container: #31476b;
+  --color-on-secondary-container: #a0b6e0;
+  --color-primary-fixed-dim: #ffb59c;
+  --color-on-primary-container: #561700;
+  --color-tertiary: #c1c7cf;
+  --color-surface-bright: #252525;
+  --color-secondary: #b1c7f2;
+  --color-on-primary-fixed: #390c00;
+  --color-on-tertiary: #2b3137;
+  --color-outline-variant: #5b4138;
+  --color-surface-container-low: #111111;
+  --color-primary-container: #ff5f1f;
+  --color-surface-container-lowest: #050505;
+  --color-on-secondary-fixed-variant: #31476b;
+  --color-inverse-on-surface: #313030;
+  --color-surface-container: #151515;
+  --color-surface-variant: #2a2a2a;
+  --color-surface-container-highest: #2a2a2a;
+  --color-inverse-primary: #ab3600;
+  --color-on-surface-variant: #e3bfb3;
+  --color-primary-fixed: #ffdbcf;
+  --color-on-surface: #e5e2e1;
+  --color-tertiary-fixed-dim: #c1c7cf;
+  --color-surface-tint: #ffb59c;
+  --color-on-error-container: #ffdad6;
+  --color-tertiary-fixed: #dde3eb;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --spacing-margin-mobile: 20px;
+  --spacing-unit: 4px;
+  --spacing-margin-desktop: 80px;
+  --spacing-section-gap: 160px;
+  --spacing-gutter: 24px;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-headline-lg-mobile: "Anton", sans-serif;
+  --font-body-lg: "Archivo Narrow", sans-serif;
+  --font-label-sm: "Space Grotesk", sans-serif;
+  --font-title-md: "Archivo Narrow", sans-serif;
+  --font-body-md: "Archivo Narrow", sans-serif;
+  --font-display-xl: "Anton", sans-serif;
+  --font-headline-lg: "Anton", sans-serif;
+
+  --animate-shine: shine 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  
+  @keyframes shine {
+    0% { left: -100%; }
+    100% { left: 125%; }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .grain {
+      background-image: url("https://www.transparenttextures.com/patterns/p6.png");
+      opacity: 0.05;
+  }
+  .gradient-energy {
+      background: linear-gradient(135deg, var(--color-primary) 0%, #ff1f7e 50%, #7e1fff 100%);
+      background-size: 200% 200%;
+      animation: flow 10s ease infinite;
+  }
+  .text-overlap {
+      text-shadow: 10px 10px 0px rgba(0,0,0,0.1);
+  }
+  .slant-section {
+      clip-path: polygon(0 5%, 100% 0, 100% 95%, 0 100%);
+  }
+  .blur-decorative {
+      filter: blur(80px);
+      opacity: 0.4;
+  }
+  .kinetic-text {
+      -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+      color: transparent;
+  }
+  .glass-panel { 
+      background: rgba(255, 255, 255, 0.03); 
+      backdrop-filter: blur(12px); 
+      border: 1px solid rgba(255, 255, 255, 0.05); 
+  }
+  .slant-cut { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+  .slant-cut-reverse { clip-path: polygon(5% 0, 100% 0, 100% 100%, 0% 100%); }
+  .kinetic-bg { background-image: repeating-linear-gradient(45deg, rgba(255, 107, 0, 0.03) 0px, rgba(255, 107, 0, 0.03) 1px, transparent 1px, transparent 15px); }
+  .skew-active { transform: skewX(-12deg); }
+  .neon-glow-orange { box-shadow: 0 0 15px rgba(255, 107, 0, 0.3); }
+  .neon-glow-pink { box-shadow: 0 0 15px rgba(255, 0, 122, 0.3); }
+  .neon-text-orange { text-shadow: 0 0 8px rgba(255, 107, 0, 0.5); }
+  .neon-text-pink { text-shadow: 0 0 8px rgba(255, 0, 122, 0.5); }
+}
+
+@keyframes flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
