@@ -164,7 +164,7 @@ export default function Home() {
           <a className="relative group text-white px-8 py-3 font-label-sm uppercase font-bold rounded-full hover:scale-105 transition-all overflow-hidden" href="#inscricao">
             <div className="absolute inset-0 gradient-energy opacity-80 group-hover:opacity-100 transition-opacity"></div>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <span className="relative z-10 inline-block drop-shadow-md text-white">INSCRIVA-SE</span>
+            <span className="relative z-10 inline-block drop-shadow-md text-white">INSCREVA-SE</span>
           </a>
         </div>
       </motion.nav>
@@ -267,7 +267,7 @@ export default function Home() {
                 className="relative group cursor-pointer"
               >
                 <div className="absolute -inset-8 gradient-energy opacity-10 blur-3xl group-hover:opacity-30 transition-opacity duration-700"></div>
-                <div 
+                <div
                   className="relative overflow-hidden rounded-[32px] border border-white/10 shadow-2xl shadow-black/50"
                   onClick={() => setIsMapOpen(true)}
                 >
