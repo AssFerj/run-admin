@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { LayoutDashboard, Users, Package, Settings, UserPlus, HeartHandshake, PackageOpen, Search, Filter, CheckSquare, Square, Edit, ChevronLeft, ChevronRight, UserCog, LogOut, Lock, Trash2, Plus, AlertCircle, Gift, Sparkles, Trophy, Ticket, Download, Menu, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
   const [userError, setUserError] = useState("");
   const [savingUser, setSavingUser] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
-  const [modalMessage, setModalMessage] = useState<{ title: string, message: string, type?: "error" | "info" } | null>(null);
+  const [modalMessage, setModalMessage] = useState<{ title: string, message: string, type?: "error" | "info" | "success" } | null>(null);
 
   // Prizes state
   const [prizes, setPrizes] = useState<Prize[]>([]);
@@ -106,10 +106,21 @@ export default function AdminDashboard() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportFilters, setExportFilters] = useState({ statusInscricao: "TODAS", kitStatus: "TODOS", categoria: "TODAS" });
 
+  // Settings State
+  const [formConfig, setFormConfig] = useState({ cpf: true, nascimento: true, sexo: true, whatsapp: true, categoria: true });
+  const [savingConfig, setSavingConfig] = useState(false);
+
   // Mobile Menu State
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    // Config
+    const unsubConfig = onSnapshot(doc(db, "settings", "form_config"), (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        setFormConfig(docSnapshot.data() as any);
+      }
+    }, (error) => console.error("Admin Config Error:", error));
+
     // Registrations
     const q = query(collection(db, "registrations"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -119,7 +130,7 @@ export default function AdminDashboard() {
       });
       setRegistrations(regs);
       setLoading(false);
-    });
+    }, (error) => console.error("Admin Registrations Error:", error));
 
     // Users
     const qUsers = query(collection(db, "admin_users"), orderBy("createdAt", "desc"));
@@ -130,7 +141,7 @@ export default function AdminDashboard() {
       });
       setAdminUsers(u);
       setLoadingUsers(false);
-    });
+    }, (error) => console.error("Admin Users Error:", error));
 
     // Prizes
     const qPrizes = query(collection(db, "prizes"), orderBy("createdAt", "desc"));
@@ -141,10 +152,10 @@ export default function AdminDashboard() {
       });
       setPrizes(p);
       setLoadingPrizes(false);
-    });
+    }, (error) => console.error("Admin Prizes Error:", error));
 
     // Categories
-    const qCategories = query(collection(db, "categories"), orderBy("createdAt", "asc"));
+    const qCategories = query(collection(db, "categories"), orderBy("createdAt", "desc"));
     const unsubCategories = onSnapshot(qCategories, (querySnapshot) => {
       const c: Category[] = [];
       querySnapshot.forEach((doc) => {
@@ -152,7 +163,7 @@ export default function AdminDashboard() {
       });
       setCategories(c);
       setLoadingCategories(false);
-    });
+    }, (error) => console.error("Admin Categories Error:", error));
 
     // Kits
     const qKits = query(collection(db, "kits"), orderBy("createdAt", "desc"));
@@ -163,10 +174,22 @@ export default function AdminDashboard() {
       });
       setKits(k);
       setLoadingKits(false);
-    });
+    }, (error) => console.error("Admin Kits Error:", error));
 
-    return () => { unsubscribe(); unsubUsers(); unsubPrizes(); unsubCategories(); unsubKits(); };
+    return () => { unsubscribe(); unsubUsers(); unsubPrizes(); unsubCategories(); unsubKits(); unsubConfig(); };
   }, []);
+
+  const handleSaveConfig = async () => {
+    setSavingConfig(true);
+    try {
+      await setDoc(doc(db, "settings", "form_config"), formConfig);
+      setModalMessage({ title: "Sucesso", message: "Configurações salvas com sucesso!", type: "success" });
+    } catch (err) {
+      setModalMessage({ title: "Erro", message: "Falha ao salvar configurações.", type: "error" });
+    } finally {
+      setSavingConfig(false);
+    }
+  };
 
   const navItems = [
     { label: "Dashboard", icon: <LayoutDashboard /> },
@@ -1497,6 +1520,51 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === "Configurações" && (
+        <div className="max-w-4xl mx-auto">
+          <header className="mb-12">
+            <h2 className="font-headline-lg text-on-background tracking-tighter uppercase italic leading-none">Configurações Gerais</h2>
+            <p className="font-label-sm text-primary neon-text-orange uppercase tracking-[0.3em] mt-2">Ajustes da Plataforma</p>
+          </header>
+
+          <section className="bg-surface-container-low border border-outline-variant p-8 mb-12 relative overflow-hidden group hover:border-secondary transition-colors">
+            <div className="absolute top-0 left-0 w-full h-1 bg-secondary neon-glow-pink"></div>
+            <h3 className="font-headline-sm uppercase italic mb-6">Campos do Formulário de Inscrição</h3>
+            <p className="text-on-surface-variant text-sm mb-8">
+              Ative ou desative os campos secundários que serão exibidos na página de inscrição. O campo "Nome Completo" é obrigatório e não pode ser desativado.
+            </p>
+
+            <div className="space-y-4">
+              {['cpf', 'nascimento', 'sexo', 'whatsapp', 'categoria'].map((field) => (
+                <div key={field} className="flex items-center justify-between p-4 bg-surface-container border border-outline-variant/30">
+                  <span className="font-bold uppercase tracking-widest text-on-surface text-sm">{field}</span>
+                  <button
+                    onClick={() => setFormConfig({ ...formConfig, [field]: !(formConfig as any)[field] })}
+                    className={`w-14 h-8 rounded-full p-1 transition-colors relative ${
+                      (formConfig as any)[field] ? 'bg-emerald-500' : 'bg-surface-variant'
+                    }`}
+                  >
+                    <div className={`w-6 h-6 bg-white rounded-full transition-transform ${
+                      (formConfig as any)[field] ? 'translate-x-6' : 'translate-x-0'
+                    }`}></div>
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={handleSaveConfig}
+                disabled={savingConfig}
+                className="bg-primary text-on-primary font-bold px-8 py-4 slant-cut hover:bg-secondary hover:text-on-secondary transition-all hover:neon-glow-pink"
+              >
+                {savingConfig ? 'SALVANDO...' : 'SALVAR CONFIGURAÇÕES'}
+              </button>
+            </div>
+          </section>
         </div>
       )}
 

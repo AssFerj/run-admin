@@ -4,24 +4,52 @@ import { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import { PackageCheck, Zap, RefreshCw, ChevronDown, CheckCircle, Store, CalendarCheck } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, orderBy, doc } from "firebase/firestore";
+import Receipt from "@/components/Receipt";
 
 export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success">("idle");
   const [categories, setCategories] = useState<{ id: string, nome: string }[]>([]);
+  const [registrationData, setRegistrationData] = useState<any>(null);
+  const [formConfig, setFormConfig] = useState<any>(null);
   const { scrollY } = useScroll();
 
   useEffect(() => {
     const qCategories = query(collection(db, "categories"), orderBy("createdAt", "asc"));
-    const unsub = onSnapshot(qCategories, (querySnapshot) => {
-      const c: { id: string, nome: string }[] = [];
-      querySnapshot.forEach((doc) => {
-        c.push({ id: doc.id, nome: doc.data().nome });
-      });
-      setCategories(c);
-    });
-    return () => unsub();
+    const unsub = onSnapshot(
+      qCategories,
+      (querySnapshot) => {
+        const c: { id: string, nome: string }[] = [];
+        querySnapshot.forEach((docSnap) => {
+          c.push({ id: docSnap.id, nome: docSnap.data().nome });
+        });
+        setCategories(c);
+      },
+      (error) => {
+        console.error("Erro de permissão no Firebase ao buscar categorias:", error);
+      }
+    );
+
+    const unsubConfig = onSnapshot(doc(db, "settings", "form_config"), 
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          setFormConfig(docSnapshot.data());
+        } else {
+          setFormConfig({ cpf: true, nascimento: true, sexo: true, whatsapp: true, categoria: true });
+        }
+      },
+      (error) => {
+        console.error("Erro de permissão no Firebase ao buscar config:", error);
+        // Fallback default se o usuário ainda não configurou as regras do Firebase
+        setFormConfig({ cpf: true, nascimento: true, sexo: true, whatsapp: true, categoria: true });
+      }
+    );
+
+    return () => {
+      unsub();
+      unsubConfig();
+    };
   }, []);
 
   // Parallax effects
@@ -47,17 +75,45 @@ export default function Home() {
 
       await addDoc(collection(db, "registrations"), data);
 
+      setRegistrationData(data);
       setSubmitStatus("success");
       setIsSubmitting(false);
 
-      setTimeout(() => {
-        setSubmitStatus("idle");
-        (e.target as HTMLFormElement).reset();
-      }, 4000);
+      // Do not auto-close so the user can download the PDF
+      // setTimeout(() => {
+      //   setSubmitStatus("idle");
+      //   (e.target as HTMLFormElement).reset();
+      // }, 4000);
     } catch (error) {
       console.error("Error adding document: ", error);
       setIsSubmitting(false);
       alert("Houve um erro ao realizar a inscrição. Tente novamente mais tarde.");
+    }
+  };
+
+  const generatePDF = async () => {
+    try {
+      const { toPng } = await import('html-to-image');
+      const jsPDF = (await import('jspdf')).default;
+      
+      const element = document.getElementById("receipt-container");
+      if (!element) return;
+      
+      const dataUrl = await toPng(element, { 
+        backgroundColor: '#1E1E24', // Bg color do surface
+        pixelRatio: 2
+      });
+      
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("comprovante-sao-pedro.pdf");
+    } catch (err) {
+      console.error("Erro ao gerar PDF", err);
+      alert("Houve um erro ao gerar o PDF.");
     }
   };
 
@@ -294,8 +350,9 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="absolute inset-0 z-50 bg-surface/90 backdrop-blur-md flex flex-col items-center justify-center text-center p-8 border border-emerald-500/30"
+                  className="absolute inset-0 z-50 bg-surface/95 backdrop-blur-md flex flex-col items-center justify-center text-center p-8 border border-emerald-500/30 rounded-3xl"
                 >
+                  <button onClick={() => { setSubmitStatus("idle"); setRegistrationData(null); }} className="absolute top-4 right-4 text-white/50 hover:text-white">✕</button>
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -305,9 +362,19 @@ export default function Home() {
                     <CheckCircle className="w-24 h-24" />
                   </motion.div>
                   <h3 className="font-headline-lg italic text-4xl text-white mb-4">INSCRIÇÃO CONFIRMADA!</h3>
-                  <p className="font-body-lg text-white/70 max-w-md">
+                  <p className="font-body-lg text-white/70 max-w-md mb-8">
                     Prepare seus tênis. Você receberá um WhatsApp com os próximos passos em breve.
                   </p>
+                  <button
+                    onClick={generatePDF}
+                    className="bg-secondary text-white font-bold px-8 py-4 rounded-full hover:scale-105 transition-transform flex items-center gap-2 shadow-[0_0_20px_rgba(138,18,217,0.5)]"
+                  >
+                    BAIXAR COMPROVANTE (PDF)
+                  </button>
+                  {/* Hidden Receipt Component for PDF Generation */}
+                  <div style={{ position: 'absolute', top: '-9999px', left: '-9999px' }}>
+                    <Receipt data={registrationData} />
+                  </div>
                 </motion.div>
               )}
 
@@ -316,30 +383,38 @@ export default function Home() {
                   <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Nome Completo</label>
                   <input name="nome" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="DIGITE SEU NOME" type="text" required />
                 </div>
-                <div className="group relative">
-                  <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">CPF</label>
-                  <input name="cpf" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="000.000.000-00" type="text" required />
-                </div>
-                <div className="group relative">
-                  <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Nascimento</label>
-                  <input name="nascimento" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl cursor-pointer" type="date" required />
-                </div>
-                <div className="group relative">
-                  <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Sexo</label>
-                  <div className="relative">
-                    <select name="sexo" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none appearance-none rounded-xl cursor-pointer" required>
-                      <option className="bg-surface text-white" value="">SELECIONE...</option>
-                      <option className="bg-surface text-white" value="MASCULINO">MASCULINO</option>
-                      <option className="bg-surface text-white" value="FEMININO">FEMININO</option>
-                    </select>
-                    <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none w-6 h-6" />
+                {formConfig?.cpf !== false && (
+                  <div className="group relative">
+                    <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">CPF</label>
+                    <input name="cpf" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="000.000.000-00" type="text" required />
                   </div>
-                </div>
-                <div className="group relative">
-                  <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">WhatsApp</label>
-                  <input name="whatsapp" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="(00) 00000-0000" type="tel" required />
-                </div>
-                {categories.length > 0 && (
+                )}
+                {formConfig?.nascimento !== false && (
+                  <div className="group relative">
+                    <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Nascimento</label>
+                    <input name="nascimento" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl cursor-pointer" type="date" required />
+                  </div>
+                )}
+                {formConfig?.sexo !== false && (
+                  <div className="group relative">
+                    <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Sexo</label>
+                    <div className="relative">
+                      <select name="sexo" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none appearance-none rounded-xl cursor-pointer" required>
+                        <option className="bg-surface text-white" value="">SELECIONE...</option>
+                        <option className="bg-surface text-white" value="MASCULINO">MASCULINO</option>
+                        <option className="bg-surface text-white" value="FEMININO">FEMININO</option>
+                      </select>
+                      <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none w-6 h-6" />
+                    </div>
+                  </div>
+                )}
+                {formConfig?.whatsapp !== false && (
+                  <div className="group relative">
+                    <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">WhatsApp</label>
+                    <input name="whatsapp" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="(00) 00000-0000" type="tel" required />
+                  </div>
+                )}
+                {categories.length > 0 && formConfig?.categoria !== false && (
                   <div className="group relative">
                     <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Categoria</label>
                     <div className="relative">
@@ -448,3 +523,5 @@ export default function Home() {
     </>
   );
 }
+
+// Cache bust
