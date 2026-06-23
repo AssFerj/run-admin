@@ -31,7 +31,7 @@ export default function Home() {
       }
     );
 
-    const unsubConfig = onSnapshot(doc(db, "settings", "form_config"), 
+    const unsubConfig = onSnapshot(doc(db, "settings", "form_config"),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           setFormConfig(docSnapshot.data());
@@ -95,20 +95,20 @@ export default function Home() {
     try {
       const { toPng } = await import('html-to-image');
       const jsPDF = (await import('jspdf')).default;
-      
+
       const element = document.getElementById("receipt-container");
       if (!element) return;
-      
-      const dataUrl = await toPng(element, { 
+
+      const dataUrl = await toPng(element, {
         backgroundColor: '#1E1E24', // Bg color do surface
         pixelRatio: 2
       });
-      
+
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
+
       pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save("comprovante-sao-pedro.pdf");
     } catch (err) {
@@ -363,7 +363,7 @@ export default function Home() {
                   </motion.div>
                   <h3 className="font-headline-lg italic text-4xl text-white mb-4">INSCRIÇÃO CONFIRMADA!</h3>
                   <p className="font-body-lg text-white/70 max-w-md mb-8">
-                    Prepare seus tênis. Você receberá um WhatsApp com os próximos passos em breve.
+                    Prepare seus tênis e sua fé! E não esqueça seu alimento não perecível no dia da prova, um gesto de solidariedade que faz a diferença!
                   </p>
                   <button
                     onClick={generatePDF}
