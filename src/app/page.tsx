@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, Variants } from "framer-motion";
+import { motion, useScroll, useTransform, Variants, AnimatePresence } from "framer-motion";
 import { PackageCheck, Zap, RefreshCw, ChevronDown, CheckCircle, Store, CalendarCheck } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, onSnapshot, query, orderBy, doc } from "firebase/firestore";
@@ -13,6 +13,7 @@ export default function Home() {
   const [categories, setCategories] = useState<{ id: string, nome: string }[]>([]);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [formConfig, setFormConfig] = useState<any>(null);
+  const [isMapOpen, setIsMapOpen] = useState(false);
   const isSubmittingRef = useRef(false);
   const { scrollY } = useScroll();
 
@@ -266,12 +267,15 @@ export default function Home() {
                 className="relative group cursor-pointer"
               >
                 <div className="absolute -inset-8 gradient-energy opacity-10 blur-3xl group-hover:opacity-30 transition-opacity duration-700"></div>
-                <div className="relative overflow-hidden rounded-[32px] border border-white/10 shadow-2xl shadow-black/50">
+                <div 
+                  className="relative overflow-hidden rounded-[32px] border border-white/10 shadow-2xl shadow-black/50"
+                  onClick={() => setIsMapOpen(true)}
+                >
                   <motion.img
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.8 }}
                     className="w-full h-[500px] object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-100"
-                    src="/maceio.jpg"
+                    src="/percurso.jpeg"
                     alt="Percurso"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500"></div>
@@ -525,6 +529,32 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Map Lightbox */}
+      <AnimatePresence>
+        {isMapOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 sm:p-12 cursor-zoom-out backdrop-blur-md"
+            onClick={() => setIsMapOpen(false)}
+          >
+            <motion.img
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              src="/percurso.jpeg"
+              alt="Percurso Expandido"
+              className="w-full h-auto max-h-full object-contain rounded-xl sm:rounded-3xl shadow-[0_0_50px_rgba(255,95,31,0.3)]"
+            />
+            <div className="absolute top-6 right-6 text-white/50 bg-black/50 w-12 h-12 flex items-center justify-center rounded-full backdrop-blur-md hover:bg-white/10 hover:text-white transition-colors">
+              ✕
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
