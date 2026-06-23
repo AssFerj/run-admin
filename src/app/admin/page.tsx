@@ -478,10 +478,10 @@ export default function AdminDashboard() {
       {/* Mobile Header */}
       <div className="md:hidden fixed top-0 left-0 w-full bg-surface-container-lowest border-b border-outline-variant z-40 p-4 flex justify-between items-center shadow-lg">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary/10 border border-primary/30 flex items-center justify-center neon-glow-orange slant-cut">
-            <Trophy className="w-4 h-4 text-primary" />
+          <div className="w-8 h-8 bg-secondary/10 border border-secondary/30 flex items-center justify-center neon-glow-pink rounded-full">
+            <Trophy className="w-4 h-4 text-secondary" />
           </div>
-          <h1 className="font-headline-sm text-primary neon-text-orange uppercase italic leading-none tracking-tighter">RACE ADMIN</h1>
+          <h1 className="font-headline-sm text-secondary neon-text-pink uppercase leading-none tracking-tighter">SÃO PEDRO ADMIN</h1>
         </div>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-on-background p-2 focus:outline-none">
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -491,9 +491,9 @@ export default function AdminDashboard() {
       {/* Sidebar Navigation Shell */}
       <nav className={`h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col p-gutter z-50 transform transition-transform duration-300 md:translate-x-0 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="mb-12 pt-4 px-2 hidden md:block">
-          <h1 className="font-headline-lg-mobile text-primary neon-text-orange uppercase italic leading-none tracking-tighter">RACE ADMIN</h1>
-          <div className="h-1 w-full bg-primary/10 mt-1 overflow-hidden">
-            <div className="h-full bg-primary neon-glow-orange w-1/3"></div>
+          <h1 className="font-headline-lg-mobile text-secondary neon-text-pink uppercase leading-none tracking-tighter">SÃO PEDRO ADMIN</h1>
+          <div className="h-1 w-full bg-secondary/10 mt-1 overflow-hidden rounded-full">
+            <div className="h-full bg-secondary neon-glow-pink w-1/3"></div>
           </div>
           <p className="font-label-sm text-on-surface-variant opacity-70 mt-2">GESTÃO DE EVENTO</p>
         </div>

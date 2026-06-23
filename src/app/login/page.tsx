@@ -39,14 +39,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center font-body-md selection:bg-primary selection:text-on-primary kinetic-bg p-gutter">
-      <div className="w-full max-w-md bg-surface-container-lowest border border-outline-variant p-8 sm:p-12 relative overflow-hidden group">
-        <div className="absolute top-0 left-0 w-full h-1 bg-primary neon-glow-orange"></div>
+      <div className="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-3xl p-8 sm:p-12 relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-secondary neon-glow-pink"></div>
         <div className="absolute -right-20 -top-20 opacity-5 group-hover:opacity-10 transition-opacity">
           <Lock className="w-64 h-64 text-primary" />
         </div>
         
         <div className="relative z-10">
-          <h1 className="font-headline-lg text-primary neon-text-orange uppercase italic leading-none tracking-tighter mb-2">RACE ADMIN</h1>
+          <h1 className="font-headline-lg text-secondary neon-text-pink uppercase leading-none tracking-tighter mb-2">SÃO PEDRO ADMIN</h1>
           <p className="font-label-sm text-on-surface-variant uppercase tracking-widest mb-10 opacity-70">Acesso Restrito</p>
 
           <form onSubmit={handleLogin} className="space-y-6">
@@ -58,7 +58,7 @@ export default function LoginPage() {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-surface-container border-0 border-l-4 border-primary focus:ring-0 focus:border-secondary text-on-background font-label-sm py-4 pl-12 uppercase placeholder:opacity-30 italic transition-all"
+                  className="w-full bg-surface-container border-0 border-l-4 border-primary focus:ring-0 focus:border-secondary text-on-background font-label-sm py-4 pl-12 uppercase placeholder:opacity-30 transition-all rounded-xl"
                   placeholder="DIGITE SEU E-MAIL"
                   required
                 />
@@ -73,7 +73,7 @@ export default function LoginPage() {
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-surface-container border-0 border-l-4 border-primary focus:ring-0 focus:border-secondary text-on-background font-label-sm py-4 pl-12 uppercase placeholder:opacity-30 italic transition-all"
+                  className="w-full bg-surface-container border-0 border-l-4 border-primary focus:ring-0 focus:border-secondary text-on-background font-label-sm py-4 pl-12 uppercase placeholder:opacity-30 transition-all rounded-xl"
                   placeholder="DIGITE SUA SENHA"
                   required
                 />
@@ -90,7 +90,7 @@ export default function LoginPage() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-primary text-on-primary font-bold font-label-sm uppercase tracking-widest py-5 slant-cut hover:bg-secondary hover:text-on-secondary hover:neon-glow-pink transition-all flex justify-center items-center gap-2 disabled:opacity-50"
+              className="w-full bg-primary text-on-primary font-bold font-label-sm uppercase tracking-widest py-5 rounded-2xl hover:bg-secondary hover:text-on-secondary hover:neon-glow-pink transition-all flex justify-center items-center gap-2 disabled:opacity-50"
             >
               {loading ? "Autenticando..." : "Entrar no Sistema"}
             </button>
@@ -99,7 +99,7 @@ export default function LoginPage() {
       </div>
       
       <p className="text-[10px] text-on-surface-variant/50 uppercase tracking-widest mt-12 text-center">
-        © 2024 RACE ADMIN PRO. ACESSO MONITORADO.
+        © 2026 SÃO PEDRO ADMIN. ACESSO MONITORADO.
       </p>
     </div>
   );

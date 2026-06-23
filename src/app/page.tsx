@@ -86,19 +86,23 @@ export default function Home() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="fixed top-0 w-full z-[60] mix-blend-difference px-6 md:px-margin-desktop py-6 flex justify-between items-center"
       >
-        <div className="font-headline-lg text-4xl md:text-5xl italic uppercase tracking-tighter text-white select-none">
-          RACE<span className="text-primary">DAY</span>
+        <div className="font-headline-lg text-4xl md:text-5xl uppercase tracking-tighter text-white select-none">
+          1ª CORRIDA COM <span className="text-primary">SÃO PEDRO</span>
         </div>
         <div className="hidden md:flex gap-12 items-center">
-          {["EVENTO", "PERCURSO", "INSCRIÇÃO"].map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="text-white/70 hover:text-white transition-all font-label-sm uppercase tracking-[0.3em] text-[10px] hover:tracking-[0.4em]">
-              {item}
+          {[
+            { label: "EVENTO", id: "evento" },
+            { label: "PERCURSO", id: "percurso" },
+            { label: "INSCRIÇÃO", id: "inscricao" }
+          ].map((item) => (
+            <a key={item.id} href={`#${item.id}`} className="text-white/70 hover:text-white transition-all font-label-sm uppercase tracking-[0.3em] text-[10px] hover:tracking-[0.4em]">
+              {item.label}
             </a>
           ))}
-          <a className="relative group text-white px-8 py-3 font-label-sm uppercase italic font-bold skew-x-[-20deg] hover:scale-105 transition-all overflow-hidden" href="#inscricao">
+          <a className="relative group text-white px-8 py-3 font-label-sm uppercase font-bold rounded-full hover:scale-105 transition-all overflow-hidden" href="#inscricao">
             <div className="absolute inset-0 gradient-energy opacity-80 group-hover:opacity-100 transition-opacity"></div>
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <span className="relative z-10 inline-block skew-x-[20deg] drop-shadow-md">INSCRIVA-SE</span>
+            <span className="relative z-10 inline-block drop-shadow-md text-white">INSCRIVA-SE</span>
           </a>
         </div>
       </motion.nav>
@@ -108,14 +112,15 @@ export default function Home() {
         <section className="relative min-h-screen flex items-center overflow-hidden" id="evento">
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent z-10"></div>
+            <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-black/80 to-transparent z-10 pointer-events-none"></div>
 
             <motion.div style={{ y: shape1Y }} className="absolute top-1/4 -right-20 w-96 h-96 gradient-energy rounded-full blur-decorative opacity-60"></motion.div>
             <motion.div style={{ y: shape2Y }} className="absolute bottom-1/4 -left-20 w-80 h-80 bg-purple-600 rounded-full blur-decorative opacity-50"></motion.div>
 
             <motion.img
               style={{ y: bgY, scale: 1.1 }}
-              className="w-full h-full object-cover grayscale brightness-50"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUTquIjhueCToYl258k_8r-rffAQHYYg-lFjLJINNuFdxNLchikM3JkG0v1l_-YsrbAdEfE834_YWAnGW0xJNN4uFtNe0Gft3Xz4FXt-W3xttFInA4EtA6_GieAv7tB9NIy9ehLAUfE89kix1ZWVvwPKPINbNtCOkmiAd0O5FDQ_0mAkOXJXgukLpiQv-Kzw8DrGOxLs_ZZCGUGiLR-qIofT403xt8vDvvBzGZeLpgCXar4VnXjlLhTpMqTujbPxHk0aOADEL6X5cK"
+              className="w-full h-full object-cover object-[center_0.5%] opacity-80 brightness-50"
+              src="/hero_bg_runner.png"
               alt="Hero background"
             />
           </div>
@@ -133,30 +138,30 @@ export default function Home() {
                     initial={{ width: 0 }}
                     animate={{ width: 48 }}
                     transition={{ duration: 1, delay: 0.5 }}
-                    className="h-[2px] bg-primary"
+                    className="h-[2px] bg-secondary"
                   ></motion.div>
-                  <span className="font-label-sm uppercase tracking-[0.5em] text-primary">12 DE JULHO</span>
+                  <span className="font-label-sm uppercase tracking-[0.5em] text-secondary font-bold">12 DE JULHO</span>
                 </motion.div>
 
                 <motion.div variants={fadeUp} className="relative group">
-                  <h2 className="kinetic-text font-display-xl text-5xl sm:text-7xl md:text-[140px] italic uppercase leading-[0.8] mb-0 opacity-40 select-none absolute -top-12 -left-4 group-hover:opacity-70 transition-opacity duration-700">DESAFIO</h2>
-                  <h1 className="font-display-xl text-5xl sm:text-7xl md:text-[160px] italic uppercase leading-[0.85] mb-6 relative z-10 text-overlap break-words">
-                    RACE DAY<br />
-                    <span className="text-transparent text-white gradient-energy">2,5KM - 5KM</span>
+                  <h2 className="kinetic-text font-display-xl text-5xl sm:text-7xl md:text-[140px] italic uppercase leading-[0.8] mb-0 opacity-60 select-none absolute -top-12 -left-4 group-hover:opacity-70 transition-opacity duration-700">1ª CORRIDA</h2>
+                  <h1 className="font-display-xl text-5xl sm:text-7xl md:text-[140px] italic uppercase leading-[0.85] mb-6 relative z-10 text-overlap break-words">
+                    SÃO PEDRO<br />
+                    <span className="text-transparent text-white gradient-energy text-4xl sm:text-5xl md:text-7xl block mt-4">PRAIA DO MACEIÓ</span>
                   </h1>
                 </motion.div>
 
                 <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-8 mt-12">
-                  <div className="glass-panel p-6 border-l-4 border-primary skew-x-[-10deg] hover:scale-105 hover:bg-white/[0.05] transition-all cursor-default">
-                    <div className="skew-x-[10deg]">
-                      <p className="font-label-sm uppercase text-primary/60 mb-1">LARGADA</p>
-                      <p className="font-display-xl text-4xl">06:00H</p>
+                  <div className="glass-panel p-6 border-l-4 border-primary rounded-3xl hover:scale-105 hover:bg-white/[0.05] transition-all cursor-default">
+                    <div>
+                      <p className="font-label-sm uppercase text-primary/80 mb-1 font-bold">12 de Julho</p>
+                      <p className="font-display-xl text-4xl">06 horas</p>
                     </div>
                   </div>
-                  <div className="glass-panel p-6 border-l-4 border-purple-500 skew-x-[-10deg] hover:scale-105 hover:bg-white/[0.05] transition-all cursor-default">
-                    <div className="skew-x-[10deg]">
-                      <p className="font-label-sm uppercase text-purple-400 mb-1">CENCENTRAÇÃO</p>
-                      <p className="font-title-md italic">IGREJA SÃO PEDRO (PRAIA DO MACEIÓ)</p>
+                  <div className="glass-panel p-6 border-l-4 border-secondary rounded-3xl hover:scale-105 hover:bg-white/[0.05] transition-all cursor-default">
+                    <div>
+                      <p className="font-label-sm uppercase text-secondary/80 mb-1 font-bold">CONCENTRAÇÃO</p>
+                      <p className="font-title-md text-lg">Ao lado da Igreja de São Pedro<br />(Praia do Maceió)</p>
                     </div>
                   </div>
                 </motion.div>
@@ -169,12 +174,12 @@ export default function Home() {
                 className="lg:col-span-4 hidden lg:block"
               >
                 <div className="relative group">
-                  <div className="absolute -inset-4 border border-white/10 skew-x-[-10deg] group-hover:border-primary/50 transition-colors duration-500"></div>
-                  <div className="bg-surface-container p-8 skew-x-[-10deg] relative overflow-hidden">
+                  <div className="absolute -inset-4 border border-white/10 rounded-3xl group-hover:border-primary/50 transition-colors duration-500"></div>
+                  <div className="bg-surface-container p-8 rounded-3xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="skew-x-[10deg] relative z-10">
-                      <p className="font-body-lg italic text-white/80 leading-relaxed mb-8">
-                        &quot;Acelere seu ritmo na Praia do Maceió. Uma prova de superação, fôlego e solidariedade.&quot;
+                    <div className="relative z-10">
+                      <p className="font-body-lg text-white/80 leading-relaxed mb-8">
+                        &quot;Uma prova de superação, fôlego e solidariedade.&quot;
                       </p>
                       <div className="h-1 w-full bg-gradient-to-r from-primary to-transparent mb-4"></div>
                       <p className="font-label-sm uppercase tracking-widest text-[10px]">#MOVIMENTOPRO</p>
@@ -200,7 +205,7 @@ export default function Home() {
                 className="relative group cursor-pointer"
               >
                 <div className="absolute -inset-8 gradient-energy opacity-10 blur-3xl group-hover:opacity-30 transition-opacity duration-700"></div>
-                <div className="relative overflow-hidden skew-x-[-5deg] border border-white/10 shadow-2xl shadow-black/50">
+                <div className="relative overflow-hidden rounded-[32px] border border-white/10 shadow-2xl shadow-black/50">
                   <motion.img
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.8 }}
@@ -210,8 +215,8 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500"></div>
                   <div className="absolute bottom-8 left-8 right-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="font-headline-lg text-4xl italic text-white mb-2">PERCURSO PRAIA</h3>
-                    <p className="font-label-sm text-primary tracking-[0.2em]">MACEIÓ: 2,5KM - 5KM</p>
+                    <h3 className="font-headline-lg text-4xl text-white mb-2 uppercase">PERCURSO</h3>
+                    <p className="font-label-sm text-secondary font-bold tracking-[0.2em]">2,5KM - 5KM</p>
                   </div>
                 </div>
               </motion.div>
@@ -222,14 +227,14 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 variants={staggerContainer}
               >
-                <motion.h2 variants={fadeUp} className="font-headline-lg text-4xl sm:text-5xl md:text-6xl lg:text-6xl italic uppercase mb-8 leading-none break-words">
-                  SOLIDARIEDADE <span className="text-primary relative inline-block">ATIVA
+                <motion.h2 variants={fadeUp} className="font-headline-lg text-4xl sm:text-5xl md:text-6xl lg:text-6xl uppercase mb-8 leading-none break-words">
+                  SOLIDARIEDADE <span className="text-secondary relative inline-block">ATIVA
                     <motion.span
                       initial={{ width: 0 }}
                       whileInView={{ width: "100%" }}
                       transition={{ delay: 0.5, duration: 0.8 }}
                       viewport={{ once: true }}
-                      className="absolute -bottom-2 left-0 h-2 bg-primary/30"
+                      className="absolute -bottom-2 left-0 h-2 bg-secondary/30"
                     ></motion.span>
                   </span>
                 </motion.h2>
@@ -238,13 +243,13 @@ export default function Home() {
                 </motion.p>
 
                 <motion.div variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="glass-panel p-10 flex flex-col items-center justify-center text-center hover:bg-white/[0.05] transition-colors border-white/10 hover:border-primary/50">
-                    <span className="font-display-xl text-7xl text-primary mb-2 drop-shadow-[0_0_15px_rgba(255,95,31,0.5)]">01</span>
-                    <span className="font-label-sm uppercase tracking-[0.3em] text-white/80">QUILO</span>
+                  <div className="glass-panel rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:bg-white/[0.05] transition-colors border-white/10 hover:border-secondary/50">
+                    <span className="font-display-xl text-7xl text-secondary mb-2 drop-shadow-[0_0_15px_rgba(138,18,217,0.5)]">01</span>
+                    <span className="font-label-sm uppercase tracking-[0.3em] text-white/80 font-bold">QUILO</span>
                   </div>
-                  <div className="gradient-energy p-10 flex flex-col items-center justify-center text-center shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow">
+                  <div className="gradient-energy rounded-3xl p-10 flex flex-col items-center justify-center text-center shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-shadow">
                     <PackageCheck className="text-6xl mb-4 text-white animate-bounce" style={{ animationDuration: '3s' }} />
-                    <span className="font-title-md uppercase italic text-white">ALIMENTO NÃO PERECÍVEL</span>
+                    <span className="font-title-md uppercase text-white font-bold">ALIMENTO NÃO PERECÍVEL</span>
                   </div>
                 </motion.div>
               </motion.div>
@@ -309,20 +314,20 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
                 <div className="group relative">
                   <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Nome Completo</label>
-                  <input name="nome" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-none" placeholder="DIGITE SEU NOME" type="text" required />
+                  <input name="nome" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="DIGITE SEU NOME" type="text" required />
                 </div>
                 <div className="group relative">
                   <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">CPF</label>
-                  <input name="cpf" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-none" placeholder="000.000.000-00" type="text" required />
+                  <input name="cpf" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="000.000.000-00" type="text" required />
                 </div>
                 <div className="group relative">
                   <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Nascimento</label>
-                  <input name="nascimento" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-none cursor-pointer" type="date" required />
+                  <input name="nascimento" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl cursor-pointer" type="date" required />
                 </div>
                 <div className="group relative">
                   <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Sexo</label>
                   <div className="relative">
-                    <select name="sexo" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none appearance-none rounded-none cursor-pointer" required>
+                    <select name="sexo" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none appearance-none rounded-xl cursor-pointer" required>
                       <option className="bg-surface text-white" value="">SELECIONE...</option>
                       <option className="bg-surface text-white" value="MASCULINO">MASCULINO</option>
                       <option className="bg-surface text-white" value="FEMININO">FEMININO</option>
@@ -332,13 +337,13 @@ export default function Home() {
                 </div>
                 <div className="group relative">
                   <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">WhatsApp</label>
-                  <input name="whatsapp" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-none" placeholder="(00) 00000-0000" type="tel" required />
+                  <input name="whatsapp" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none rounded-xl" placeholder="(00) 00000-0000" type="tel" required />
                 </div>
                 {categories.length > 0 && (
                   <div className="group relative">
                     <label className="font-label-sm uppercase text-primary/80 text-[10px] absolute -top-3 left-4 bg-surface px-2 transition-colors group-focus-within:text-primary z-10">Categoria</label>
                     <div className="relative">
-                      <select name="categoria" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none appearance-none rounded-none cursor-pointer" required>
+                      <select name="categoria" className="w-full bg-surface-container-low/50 border border-white/10 focus:border-primary focus:bg-primary/5 focus:ring-0 text-white font-title-md italic p-5 transition-all outline-none appearance-none rounded-xl cursor-pointer" required>
                         <option className="bg-surface text-white" value="">SELECIONE...</option>
                         {categories.map((c) => (
                           <option key={c.id} className="bg-surface text-white" value={c.nome}>{c.nome}</option>
@@ -351,7 +356,7 @@ export default function Home() {
               </div>
               <div className="mt-16 relative">
                 <button
-                  className={`relative overflow-hidden w-full group hover:scale-[1.02] active:scale-95 text-white font-display-xl text-2xl sm:text-3xl md:text-5xl py-6 md:py-8 italic uppercase skew-x-[-10deg] transition-all flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 shadow-[0_20px_50px_rgba(255,95,31,0.2)] hover:shadow-[0_20px_60px_rgba(255,95,31,0.4)] ${isSubmitting ? 'opacity-90 pointer-events-none' : ''}`}
+                  className={`relative overflow-hidden w-full rounded-2xl group hover:scale-[1.02] active:scale-95 text-white font-display-xl text-2xl sm:text-3xl md:text-5xl py-6 md:py-8 italic uppercase transition-all flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 shadow-[0_20px_50px_rgba(255,95,31,0.2)] hover:shadow-[0_20px_60px_rgba(255,95,31,0.4)] ${isSubmitting ? 'opacity-90 pointer-events-none' : ''}`}
                   type="submit"
                   disabled={isSubmitting || submitStatus === 'success'}
                 >
@@ -360,10 +365,10 @@ export default function Home() {
                   {/* Button shine effect */}
                   <div className="absolute top-0 -left-[100%] h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine"></div>
 
-                  <span className="relative z-10 inline-block skew-x-[10deg] tracking-normal sm:tracking-wider text-center">
+                  <span className="relative z-10 inline-block tracking-normal sm:tracking-wider text-center">
                     {isSubmitting ? 'PROCESSANDO...' : 'CONFIRMAR INSCRIÇÃO'}
                   </span>
-                  <span className={`relative z-10 inline-block skew-x-[10deg] ${isSubmitting ? 'animate-spin' : 'group-hover:translate-x-2 transition-transform'}`}>
+                  <span className={`relative z-10 inline-block ${isSubmitting ? 'animate-spin' : 'group-hover:translate-x-2 transition-transform'}`}>
                     {isSubmitting ? <RefreshCw className="w-8 h-8 md:w-12 md:h-12" /> : <Zap className="w-8 h-8 md:w-12 md:h-12" fill="currentColor" />}
                   </span>
                 </button>
@@ -429,8 +434,8 @@ export default function Home() {
         <div className="px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-end gap-12">
             <div>
-              <div className="font-headline-lg text-7xl md:text-9xl italic uppercase opacity-10 select-none mb-4 hover:opacity-20 transition-opacity">RACE DAY PRO</div>
-              <p className="font-label-sm text-white/40 tracking-[0.4em]">© 2026 RACE DAY.<br className="md:hidden" /> TODOS OS DIREITOS RESERVADOS.</p>
+              <div className="font-headline-lg text-6xl md:text-9xl uppercase opacity-10 select-none mb-4 hover:opacity-20 transition-opacity">1ª CORRIDA COM SÃO PEDRO</div>
+              <p className="font-label-sm text-white/40 tracking-[0.4em]">© 2026 CORRIDA COM SÃO PEDRO.<br className="md:hidden" /> TODOS OS DIREITOS RESERVADOS.</p>
             </div>
             {/* <div className="flex flex-wrap gap-8 font-label-sm uppercase text-[10px] tracking-[0.2em]">
               {["Regulamento", "Privacidade", "Contato"].map(link => (

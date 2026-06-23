@@ -16,7 +16,7 @@
   --color-outline: #aa897f;
   --color-tertiary-container: #8e959c;
   --color-on-tertiary-container: #272e34;
-  --color-primary: #ff5f1f;
+  --color-primary: #FF5A00;
   --color-surface-container-high: #1a1a1a;
   --color-on-background: #e5e2e1;
   --color-on-tertiary-fixed: #161c22;
@@ -28,7 +28,7 @@
   --color-on-primary-container: #561700;
   --color-tertiary: #c1c7cf;
   --color-surface-bright: #252525;
-  --color-secondary: #b1c7f2;
+  --color-secondary: #8A12D9;
   --color-on-primary-fixed: #390c00;
   --color-on-tertiary: #2b3137;
   --color-outline-variant: #5b4138;
@@ -108,14 +108,14 @@
       backdrop-filter: blur(12px); 
       border: 1px solid rgba(255, 255, 255, 0.05); 
   }
-  .slant-cut { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
-  .slant-cut-reverse { clip-path: polygon(5% 0, 100% 0, 100% 100%, 0% 100%); }
-  .kinetic-bg { background-image: repeating-linear-gradient(45deg, rgba(255, 107, 0, 0.03) 0px, rgba(255, 107, 0, 0.03) 1px, transparent 1px, transparent 15px); }
-  .skew-active { transform: skewX(-12deg); }
-  .neon-glow-orange { box-shadow: 0 0 15px rgba(255, 107, 0, 0.3); }
-  .neon-glow-pink { box-shadow: 0 0 15px rgba(255, 0, 122, 0.3); }
-  .neon-text-orange { text-shadow: 0 0 8px rgba(255, 107, 0, 0.5); }
-  .neon-text-pink { text-shadow: 0 0 8px rgba(255, 0, 122, 0.5); }
+  .slant-cut { border-radius: 9999px; clip-path: none; }
+  .slant-cut-reverse { border-radius: 9999px; clip-path: none; }
+  .kinetic-bg { background-image: radial-gradient(circle at 50% 50%, rgba(138, 18, 217, 0.05) 0%, transparent 60%); }
+  .skew-active { transform: none; }
+  .neon-glow-orange { box-shadow: 0 0 20px rgba(255, 90, 0, 0.4); }
+  .neon-glow-pink { box-shadow: 0 0 20px rgba(138, 18, 217, 0.4); }
+  .neon-text-orange { text-shadow: 0 0 10px rgba(255, 90, 0, 0.6); }
+  .neon-text-pink { text-shadow: 0 0 10px rgba(138, 18, 217, 0.6); }
 }
 
 @keyframes flow {

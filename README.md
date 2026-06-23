@@ -1,4 +1,4 @@
-# 🏃‍♂️ Race Day Core | Sistema de Gestão Esportiva
+# 🏃‍♂️ 1ª Corrida com São Pedro | Sistema de Gestão Esportiva
 
 <div align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
@@ -10,7 +10,7 @@
 
 <br />
 
-**Race Day Core (Race Admin)** é um sistema web completo e moderno construído para o gerenciamento de eventos esportivos e corridas de rua. Ele combina uma **Landing Page de alta conversão** com estética visual premium (Cyberpunk/Neon) e um **Painel Administrativo em tempo real** para controle total da operação do evento.
+**São Pedro Admin** é um sistema web completo e moderno construído para o gerenciamento da 1ª Corrida com São Pedro. Ele combina uma **Landing Page de alta conversão** com estética visual acolhedora e moderna (tons vibrantes em fundo escuro com neon suave e formas arredondadas) e um **Painel Administrativo em tempo real** para controle total da operação do evento.
 
 ---
 
@@ -104,7 +104,7 @@ O sistema segue o modelo estrutural do Next.js App Router:
 
 ## 🛡️ Licença e Direitos Autorais
 Todos os direitos reservados.
-Desenvolvido e operado pela organização **AssFerj** / **Race Day Core**.
+Desenvolvido e operado pela organização **AssFerj** / **São Pedro Admin**.
 
 ---
 <p align="center">
