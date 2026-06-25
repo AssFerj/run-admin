@@ -99,7 +99,20 @@ export default function Home() {
         }
       }
 
-      await addDoc(collection(db, "registrations"), data);
+      // IMPORTANTE: Para evitar que problemas de rede ou cliques múltiplos causem duplicidade
+      // (Race condition no Firebase), usamos um ID determinístico em vez de um ID aleatório.
+      let docId = "";
+      if (data.cpf) {
+        docId = (data.cpf as string).replace(/\D/g, ''); // Usa apenas os números do CPF
+      } else if (data.whatsapp) {
+        docId = (data.whatsapp as string).replace(/\D/g, '');
+      } else {
+        docId = new Date().getTime().toString() + Math.floor(Math.random() * 1000).toString();
+      }
+
+      // Se duas requisições chegarem ao mesmo tempo, elas vão gravar no MESMO documento, evitando duplicação.
+      const { setDoc } = await import("firebase/firestore");
+      await setDoc(doc(db, "registrations", docId), data);
 
       setRegistrationData(data);
       setSubmitStatus("success");
