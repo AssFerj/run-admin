@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, Variants, AnimatePresence } from "framer-motion";
 import { PackageCheck, Zap, RefreshCw, ChevronDown, CheckCircle, Store, CalendarCheck } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, onSnapshot, query, orderBy, doc } from "firebase/firestore";
+import { collection, addDoc, onSnapshot, query, orderBy, doc, where, getDocs } from "firebase/firestore";
 import Receipt from "@/components/Receipt";
 
 export default function Home() {
@@ -76,6 +76,28 @@ export default function Home() {
         categoria: formData.get("categoria") || "NÃO DEFINIDA",
         createdAt: new Date().toISOString()
       };
+
+      // Verificação de duplicidade no banco de dados para evitar inscrições repetidas em produção
+      if (data.cpf) {
+        const q = query(collection(db, "registrations"), where("cpf", "==", data.cpf));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          alert("Este CPF já está inscrito no evento!");
+          setIsSubmitting(false);
+          isSubmittingRef.current = false;
+          return;
+        }
+      } else if (data.whatsapp) {
+        // Se CPF estiver desativado, checa por WhatsApp
+        const q = query(collection(db, "registrations"), where("whatsapp", "==", data.whatsapp));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          alert("Este WhatsApp já possui uma inscrição no evento!");
+          setIsSubmitting(false);
+          isSubmittingRef.current = false;
+          return;
+        }
+      }
 
       await addDoc(collection(db, "registrations"), data);
 
