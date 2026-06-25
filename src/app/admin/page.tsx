@@ -110,6 +110,11 @@ export default function AdminDashboard() {
   const [formConfig, setFormConfig] = useState({ cpf: true, nascimento: true, sexo: true, whatsapp: true, categoria: true });
   const [savingConfig, setSavingConfig] = useState(false);
 
+  // Audit State
+  const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
+  const [duplicateGroups, setDuplicateGroups] = useState<Registration[][]>([]);
+  const [isAuditing, setIsAuditing] = useState(false);
+
   // Mobile Menu State
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -188,6 +193,69 @@ export default function AdminDashboard() {
       setModalMessage({ title: "Erro", message: "Falha ao salvar configurações.", type: "error" });
     } finally {
       setSavingConfig(false);
+    }
+  };
+
+  const auditDuplicates = () => {
+    const grouped: Record<string, Registration[]> = {};
+    registrations.forEach(reg => {
+      const rawCpf = reg.cpf || '';
+      const cpf = rawCpf.replace(/\D/g, ''); 
+      const rawWhatsapp = reg.whatsapp || '';
+      const whatsapp = rawWhatsapp.replace(/\D/g, '');
+      const key = cpf ? `CPF-${cpf}` : (whatsapp ? `WPP-${whatsapp}` : null);
+      
+      if (key) {
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(reg);
+      }
+    });
+
+    const duplicates = Object.values(grouped).filter(group => group.length > 1);
+    setDuplicateGroups(duplicates);
+    setIsAuditModalOpen(true);
+  };
+
+  const unifyGroup = async (group: Registration[]) => {
+    setIsAuditing(true);
+    try {
+      // sort by createdAt (keep the oldest)
+      const sorted = [...group].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      const toKeep = sorted[0];
+      const toDelete = sorted.slice(1);
+      
+      for(const reg of toDelete) {
+        await deleteDoc(doc(db, "registrations", reg.id));
+      }
+      
+      setDuplicateGroups(prev => prev.filter(g => g !== group));
+      setModalMessage({ title: "Sucesso", message: `Unificamos as inscrições de ${toKeep.nome}.`, type: "success" });
+    } catch (err) {
+      setModalMessage({ title: "Erro", message: "Falha ao unificar inscrições.", type: "error" });
+    } finally {
+      setIsAuditing(false);
+    }
+  };
+
+  const unifyAllGroups = async () => {
+    if (duplicateGroups.length === 0) return;
+    setIsAuditing(true);
+    try {
+      let totalDeleted = 0;
+      for (const group of duplicateGroups) {
+        const sorted = [...group].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        const toDelete = sorted.slice(1);
+        for(const reg of toDelete) {
+          await deleteDoc(doc(db, "registrations", reg.id));
+          totalDeleted++;
+        }
+      }
+      setDuplicateGroups([]);
+      setModalMessage({ title: "Sucesso", message: `Operação concluída! ${totalDeleted} inscrições excedentes foram excluídas.`, type: "success" });
+    } catch (err) {
+      setModalMessage({ title: "Erro", message: "Falha ao processar a limpeza em lote.", type: "error" });
+    } finally {
+      setIsAuditing(false);
     }
   };
 
@@ -779,6 +847,10 @@ export default function AdminDashboard() {
                 <p className="font-label-sm text-primary neon-text-orange uppercase tracking-[0.3em] mt-2">Controle de Inscrições</p>
               </div>
               <div className="text-right flex flex-col sm:flex-row items-end gap-4">
+                <button onClick={auditDuplicates} className="bg-secondary/20 text-secondary px-6 py-4 font-bold font-label-sm slant-cut flex items-center gap-2 hover:bg-secondary hover:text-on-secondary transition-all">
+                  <Sparkles className="w-5 h-5" />
+                  Auditar
+                </button>
                 <button onClick={() => setIsExportModalOpen(true)} className="bg-surface-container text-on-surface-variant px-6 py-4 font-bold font-label-sm slant-cut flex items-center gap-2 hover:bg-secondary hover:text-on-secondary transition-all">
                   <Download className="w-5 h-5" />
                   Exportar Dados
@@ -1627,6 +1699,84 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global Message Modal */}
+      {modalMessage && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/90 p-4 backdrop-blur-sm">
+          <div className={`bg-surface-container border p-8 max-w-sm w-full text-center ${modalMessage.type === "success" ? "border-emerald-500" : modalMessage.type === "error" ? "border-secondary" : "border-primary"}`}>
+            <h2 className="font-headline-sm uppercase italic mb-2 text-on-background">{modalMessage.title}</h2>
+            <p className="font-label-sm text-on-surface-variant mb-6">{modalMessage.message}</p>
+            <button
+              onClick={() => setModalMessage(null)}
+              className="w-full bg-surface-container-highest text-on-background py-3 font-bold font-label-sm uppercase hover:bg-primary hover:text-on-primary transition-all slant-cut"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Audit Modal */}
+      {isAuditModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/90 p-4 backdrop-blur-sm">
+          <div className="bg-surface-container border border-outline-variant rounded-3xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <button onClick={() => setIsAuditModalOpen(false)} className="absolute top-6 right-6 text-on-surface-variant hover:text-primary transition-colors">
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="font-headline-sm text-on-background uppercase italic mb-2">Auditoria de Inscrições</h2>
+            <p className="font-label-sm text-secondary uppercase tracking-widest mb-8">Varredura de Duplicidades</p>
+
+            {duplicateGroups.length === 0 ? (
+              <div className="text-center py-12">
+                <CheckSquare className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
+                <p className="font-bold text-on-background uppercase text-xl">Banco de Dados Limpo!</p>
+                <p className="text-on-surface-variant mt-2 text-sm">Não foram encontradas inscrições duplicadas baseadas no CPF ou WhatsApp.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-primary/10 border-l-4 border-primary p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="text-primary font-bold uppercase text-[12px] tracking-wider">
+                      {duplicateGroups.length} Atleta(s) com inscrições duplicadas
+                    </p>
+                    <p className="text-on-surface-variant text-[11px] mt-1">O sistema preservará a inscrição mais antiga e excluirá as excedentes.</p>
+                  </div>
+                  <button
+                    onClick={unifyAllGroups}
+                    disabled={isAuditing}
+                    className="bg-primary text-on-primary px-4 py-2 font-bold font-label-sm uppercase hover:bg-secondary hover:text-on-secondary transition-all disabled:opacity-50 whitespace-nowrap slant-cut"
+                  >
+                    {isAuditing ? "Processando..." : "Unificar Todos"}
+                  </button>
+                </div>
+
+                {duplicateGroups.map((group, idx) => (
+                  <div key={idx} className="bg-surface border border-outline-variant p-5 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                      <p className="font-bold text-on-background uppercase">{group[0].nome}</p>
+                      <p className="text-on-surface-variant text-[11px] mt-1 uppercase tracking-widest">
+                        {group[0].cpf ? `CPF: ${group[0].cpf}` : `WPP: ${group[0].whatsapp}`} • {group.length} INSCRIÇÕES
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        {group.map((g, i) => (
+                          <span key={i} className="bg-surface-container-highest px-2 py-1 text-[9px] text-on-surface-variant rounded">ID: {g.id.substring(0,6)}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => unifyGroup(group)}
+                      disabled={isAuditing}
+                      className="bg-secondary/10 border border-secondary text-secondary px-4 py-2 font-bold font-label-sm uppercase hover:bg-secondary hover:text-on-secondary transition-all disabled:opacity-50 whitespace-nowrap"
+                    >
+                      {isAuditing ? "Unificando..." : "Unificar"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
